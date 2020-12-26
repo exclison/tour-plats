@@ -8,4 +8,7 @@ function extend(target, source) {
 let apiUrl = {};
 extend(apiUrl, require("./common"));
 extend(apiUrl, require("./user"));
+extend(apiUrl, require("./hotel"));
+extend(apiUrl, require("./room"));
+extend(apiUrl, require("./flight"));
 module.exports = apiUrl;

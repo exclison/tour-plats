@@ -10,14 +10,7 @@ const route = new Router();
  *@date: 2020-12-18 16:03:52
  */
 route.get("/get-flight-list", async (ctx) => {
-  const info = parseToken(ctx.header.ticket);
-  const role = info.role;
-  console.log(info);
-
-  const sql =
-    role === 1
-      ? `SELECT * FROM flight`
-      : `SELECT * FROM filght WHERE users LIKE '${info.id}%'`;
+  const sql = `SELECT * FROM flight`;
   const result = await query(sql);
   ctx.body = result;
   return;
@@ -105,10 +98,7 @@ route.get("/get-flight-by-id", async (ctx) => {
 
   const result = resultList[0];
 
-  const userSql = `SELECT * FROM user WHERE id IN (${result.users.replace(
-    /\"/g,
-    ""
-  )})`;
+  const userSql = `SELECT user.id,user.name,user.phone,user.sex,seat.flight_id FROM user LEFT JOIN seat ON user.id=seat.user_id WHERE seat.flight_id=${result.id}`;
 
   const userList = await query(userSql);
 
@@ -116,6 +106,21 @@ route.get("/get-flight-by-id", async (ctx) => {
 
   ctx.body = result;
 
+  return;
+});
+
+/*
+ * @name:/flight/reserve-flight
+ * @description:预定航班
+ * @date: 2020-12-26 20:23
+ * @params: {String} userId: 用户id
+ * @params: {String} flightId: 航班id
+ */
+route.post("/reserve-flight", async (ctx) => {
+  const { userId, flightId } = ctx.request.body;
+  const sql = `INSERT INTO seat (flight_id,user_id) VALUES ('${flightId}','${userId}')`;
+  await query(sql);
+  ctx.body = "success";
   return;
 });
 
